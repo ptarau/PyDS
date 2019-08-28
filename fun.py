@@ -42,8 +42,43 @@ def fibos1(n) :
 
 # examples of use
 
-print('hello')
+#print('hello')
 
-print(fibo(10))
+#print(fibo(11))
 
+'''
+SyntaxError: invalid syntax
+>>> succ(5)
+6
+>>> (lambda x: x*x)(10)
+100
+>>> 10*10
+100
+>>> fibo1(10)
+89
+>>> fibo(10)
+89
+>>> fibo2(10)
+89
+>>> fibos(10)
+[1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
+>>> fibos(11)
+[1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
+>>> fibos1(10)
+[1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
+>>> range(5)
+range(0, 5)
+>>> range(0,5)
+range(0, 5)
+>>> list(range(0,5))
+[0, 1, 2, 3, 4]
+>>> set(range(0,5))
+{0, 1, 2, 3, 4}
+>>> set([1,2,3,2,1,4])
+{1, 2, 3, 4}
+>>> set([5,1,2,3,2,1,4,5])
+{1, 2, 3, 4, 5}
+>>> 
+
+'''
 
