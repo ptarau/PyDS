@@ -67,3 +67,36 @@ d[key]='maybe'
 dd={1:'one',2:'two'}
 
 
+# files: seen as yet another generator
+# where the read or write operation is
+# what we iterate on
+
+# turns a string into given file
+def string2file(fname,text) :
+  with open(fname,'w') as f :
+    f.write(text)
+
+# turns content of file into a string
+def file2string(fname) :
+  with open(fname,'r') as f :
+    s = f.read()
+    return s
+
+def test1() :
+  s=file2string('ds.py')
+  ls=s.split('\n')
+  for l in ls :
+    print(l)
+
+def test2() :
+  xs = [2,3874,0,2,1,2098,1,0,77]
+  return list(set(sorted(xs)))
+
+def qsort(xs) :
+  if xs==[] : return xs
+  x=xs[0]
+  ys=xs[1:]
+  ls=[y for y in ys if y<=x]
+  bs=[y for y in ys if y>x]
+  return qsort(ls) + [x] + qsort(bs)
+
