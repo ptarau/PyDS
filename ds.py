@@ -100,3 +100,36 @@ def qsort(xs) :
   bs=[y for y in ys if y>x]
   return qsort(ls) + [x] + qsort(bs)
 
+# list and set comprehensions
+
+lc1=[x for x in range(9) if x < 5]
+
+def cart_prod(xs,ys) :
+  return [(x,y) for x in xs for y in ys]
+
+def lc2() :
+  return cart_prod([1,2,3],['a','b'])
+
+def cart_prod1(xs,ys) :
+  for x in xs :
+    for y in ys:
+      yield (x,y)
+
+def lc3() :
+  return cart_prod1([1, 2, 3], ['a', 'b'])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
