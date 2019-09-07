@@ -13,6 +13,9 @@ class queue(object) :
       self.ys=[]
     return self.xs.pop()
 
+  def empty(self) :
+    return self.xs == [] and self.ys==[]
+
   def __str__(self):
     buf=['queue: ']
     for t in self.xs + self.ys :
@@ -22,7 +25,9 @@ class queue(object) :
 
 def t1() :
   q=queue()
+  print(q.empty())
   q.add(1)
+  print(q.empty())
   q.add(2)
   print(q)
   x=q.remove()
