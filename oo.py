@@ -18,7 +18,7 @@ class queue(object) :
 
   def __str__(self):
     buf=['queue: ']
-    for t in self.xs + self.ys :
+    for t in list(reversed(self.xs)) + self.ys :
       buf.append(str(t))
       buf.append(' ')
     return "".join(buf)
