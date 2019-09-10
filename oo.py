@@ -18,10 +18,40 @@ class queue(object) :
 
   def __str__(self):
     buf=['queue: ']
-    for t in list(reversed(self.xs)) + self.ys :
+    for t in reversed(self.xs):
+      buf.append(str(t))
+      buf.append(' ')
+    buf.append('| ')
+    for t in self.ys:
       buf.append(str(t))
       buf.append(' ')
     return "".join(buf)
+
+# random tests
+
+from random import randint
+
+def ranops(n) :
+  q=queue()
+
+  for i in range(n) :
+    dice = randint(0,2)
+    if dice>0 : q.add(i)
+    elif not q.empty() : q.remove()
+  return q
+
+def qtest(n) :
+  return str(ranops(n))
+
+# benchmarks using random tests
+
+from timeit import timeit as tm
+
+def qbm(n) :
+  print('benchmark for',n,'queue operations')
+  print(tm(lambda : ranops(n),number=1))
+
+# short hands for tests
 
 def t1() :
   q=queue()
@@ -42,4 +72,8 @@ def t1() :
   print(z)
   print(q)
 
-t1()
+def t2() :
+  print(qtest(42))
+
+def t3() :
+  qbm(1000000)
