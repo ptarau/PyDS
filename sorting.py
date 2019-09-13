@@ -63,7 +63,20 @@ def quick_sort(xs) :
   bs=[y for y in ys if y>x]
   return quick_sort(ls) + [x] + quick_sort(bs)
 
+# timing
 
+from timeit import timeit as tm
+from random import randint
+
+def randints(n) :
+  for i in range(n) :
+    yield randint(0,n-1)
+
+def qbm(f,n) :
+  print('benchmark for sorting',n,'numbers')
+  print(tm(lambda : f(list(randints(n))),number=1))
+
+# tests
 def t1() :
   ns = [5,3,6,8,1,9,4,5,6,9,0,2,3,6]
   print('insertion_sort')
