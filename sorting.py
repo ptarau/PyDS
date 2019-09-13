@@ -89,8 +89,8 @@ def t4() :
   print(merge_sort(ns))
 
 
-
-t1()
-t2()
-t3()
-t4()
+def go() :
+  t1()
+  t2()
+  t3()
+  t4()
