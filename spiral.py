@@ -6,7 +6,7 @@ turtle.bgcolor("orange")
 # Create a turle
 t = turtle.Turtle()
 t.width(2)
-t.speed(100)  
+t.speed(1)
 t.color("red")
 
 def spirals():
