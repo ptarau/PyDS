@@ -1,9 +1,10 @@
-# binary and binary-unary (Mozkin) tree generators
+import graphvizTree as gt
+
 
 # binary tree of size n
 def bin(n) :
   if n==0 : 
-    yield n
+    yield ()
   else :
     for k in range(0,n) :    
       for l in bin(k) :
@@ -28,7 +29,7 @@ def showFor(mes,f,n) :
     print(t)
   print("")
  
-showFor('Binary trees',bin,3)
+showFor('Binary trees',bin,5)
 
 countsFor('Binary trees',bin,12)
 
