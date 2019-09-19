@@ -1,3 +1,38 @@
+class BinTree :
+  def __init__(self,x,y) :
+    self.x=x
+    self.y=y
+
+  def __str__(self) :
+    def mystr(t) :
+      if not mystr(t) :
+        yield ('*')
+      else : # t is a branch
+        if t.x :
+          print('L')
+          yield ('<')
+          for s in mystr(t.x) : yield s
+          yield (',')
+        else :
+          yield '*'
+        if t.y:
+          print('R')
+          for s in mystr(t.y): yield s
+          yield ('>')
+        else:
+          yield '*'
+    return "".join(mystr(self))
+
+
+def b1() :
+  x=BinTree(None,None)
+  y=BinTree(x,x)
+  z=BinTree(x,y)
+  #print(z)
+  return z
+
+
+
 class queue(object) :
   def __init__(self) :
     self.xs=[]

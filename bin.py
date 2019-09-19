@@ -11,7 +11,7 @@ def bin(n) :
         for r in bin(n-1-k) :        
           yield (l,r)
 
-          # rose tree (multi-way tree) of size n
+# rose tree (multi-way tree) of size n
 def rose(n):
   if n == 0:
     yield []
