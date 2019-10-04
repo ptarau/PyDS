@@ -4,6 +4,7 @@ class hashmap() :
   def __init__(self):
     self.H=[[]]*4
     self.ctr=0
+
   def add(self,k,v):
     h=hash(k) % len(self.H)
     vs=self.H[h]
@@ -38,9 +39,6 @@ class hashmap() :
     if where >= 0 :
       vs.pop(where)
 
-
-
-
   def __str__(self):
     #return str(self.H)
     buf=['[\n']
@@ -55,6 +53,13 @@ class hashmap() :
     buf.append(']')
     return "".join(buf)
 
+  def __getitem__(self,k) :
+    return self.get(k)
+
+  def __setitem__(self,k,v) :
+    self.add(k,v)
+
+
 def t1() :
   d=hashmap()
   d.add('hello','Joe')
@@ -68,6 +73,9 @@ def t1() :
   d.remove('cheers')
   print(d)
   print(d.get('cheers'))
+  print(d['bye'])
+  d['cheers']='Henry'
+  print(d)
   return(d)
 
 t1()
