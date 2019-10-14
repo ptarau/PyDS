@@ -3,7 +3,7 @@
 # True_().ev()
 # False_().ev()
 # Or(True_(), Or(False_(),False_())).ev()
-# Most of the code copied from Tauru Lecture
+# Most of the code copied from Tarau's Lecture
 # And & Or classes ev() by John Long
 
 class Expr:
