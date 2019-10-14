@@ -1,7 +1,7 @@
 import turtle
 import time
 
-# lambda term with de Bruijn indices as leaves
+# tree with indices as leaves
 # t = ('a',l,r) or ('l',t) or i where l,r are subtrees and i is an int de Bruijn index
 # tree with x,y annotations
 # t = ('a',x,y,l,r) or ('l',x,y,t) or (i,x,y)

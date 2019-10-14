@@ -50,7 +50,7 @@ def main():
     pen.setpos(-size*size, -size*size)
     pen.pd() #down
     
-    pen.hilbert(size, 5, 1)
+    pen.hilbert(size, 4, 1)
 
     return "done"
 

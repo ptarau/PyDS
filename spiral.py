@@ -3,7 +3,7 @@ import turtle
 # Set the background color
 turtle.bgcolor("orange")
 
-# Create a turle
+# Create a turtle
 t = turtle.Turtle()
 t.width(2)
 t.speed(10)
