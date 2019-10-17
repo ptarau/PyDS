@@ -22,4 +22,10 @@ def t1() :
   print('graph',G)
   showGraph(G)
 
+def t2() :
+  er = nx.erdos_renyi_graph(20, 0.15)
+  showGraph(er)
 
+def t3() :
+  mz = nx.sedgewick_maze_graph()
+  showGraph(mz)
