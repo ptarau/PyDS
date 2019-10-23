@@ -19,13 +19,17 @@ class digraph(nx.DiGraph) :
   def show(self):
     return show(self)
 
-def df_nodes(g,node,visited):
-  if node in visited : return
-  visited.add(node)
-  yield node
-  for child in  g[node] :
-    for n in df_nodes(g,child,visited) :
-      yield n
+def df_nodes(g,source):
+  visited=set()
+  def visit(node) :
+    if node in visited : return
+    visited.add(node)
+    yield node
+    for child in  g[node] :
+      for n in visit(child) :
+        yield n
+  for n in visit(source) :
+    yield n
 
 def show(g):
   dot = gv.Digraph()
@@ -49,14 +53,11 @@ def t2() :
 
 def t3() :
   g=digraph().rand().show()
-  print(type(g))
-  ns=algs.dfs_preorder_nodes(g)
-  print(list(ns))
-  visited=set()
-  print(list(df_nodes(g,0,visited)))
-  print(visited)
+  ns=algs.dfs_preorder_nodes(g,source=0)
+  print('networx',list(ns))
+  print('ours   ',list(df_nodes(g,0)))
 
-#t3()
+t3()
 
 
 
