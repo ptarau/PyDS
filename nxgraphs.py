@@ -1,5 +1,6 @@
 import networkx as nx
 import graphviz as gv
+import numpy as np
 
 class digraph(nx.DiGraph) :
 
@@ -16,8 +17,17 @@ class digraph(nx.DiGraph) :
 
     return self
 
+  # assumes nodes in range(0,number_of_nodes)
+  def to_matrix(self):
+    n=max(self.nodes())+1
+    m=np.zeros((n,n),dtype=int)
+    for f,t in self.edges() :
+      m[f,t]=1
+    return m
+
   def show(self):
     return show(self)
+
 
 # depth first traversal
 def df_nodes(g,source):
@@ -84,8 +94,22 @@ def t4() :
   print('networx',list(ns))
   print('ours   ',list(id_nodes(g,0)))
 
+def t5() :
+  g=digraph().rand() #.show()
+  m=g.to_matrix()
+  print(m)
+  g_again=digraph(m)
+  g_again.show()
 
+def t6() :
+  g=digraph([('one',42),(42,'one'),
+             ('one','two'),('two','two'),('two',42)])
+  g.show()
+
+#t0()
 #t1()
 #t2()
 #t3()
 t4()
+#t5()
+
