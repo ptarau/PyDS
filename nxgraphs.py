@@ -61,6 +61,13 @@ def id_nodes(g,source,max_depth=None):
     for n in visit(source,fuel) :
       yield n
 
+def search(g,algo,source,target) :
+  for n in algo(g,source) :
+    if n == target :
+      return ('found',target)
+  return 'not found'
+
+# TODO adapt this to return the path to target
 
 def show(g):
   dot = gv.Digraph()
@@ -106,10 +113,17 @@ def t6() :
              ('one','two'),('two','two'),('two',42)])
   g.show()
 
+# testing for a target
+def t7() :
+  g=digraph().rand().show()
+  print(search(g,id_nodes,0,10))
+
 #t0()
 #t1()
 #t2()
 #t3()
-t4()
+#t4()
 #t5()
+t7()
+
 
