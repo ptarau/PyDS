@@ -107,6 +107,8 @@ def t5() :
   print(m)
   g_again=digraph(m)
   g_again.show()
+  mm=g_again.to_matrix()
+  print(mm)
 
 def t6() :
   g=digraph([('one',42),(42,'one'),
@@ -123,7 +125,7 @@ def t7() :
 #t2()
 #t3()
 #t4()
-#t5()
-t7()
+t5()
+#t7()
 
 
