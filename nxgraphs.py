@@ -4,15 +4,28 @@ import numpy as np
 
 class digraph(nx.DiGraph) :
 
-  def rand(self):
-    er = nx.dense_gnm_random_graph(12, 12)
+  def random(self,n_nodes,n_edges):
+    er = nx.dense_gnm_random_graph(n_nodes, n_nodes)
     for e in er.edges() :
       f,t=e
       self.add_edge(f,t)
-    er = nx.dense_gnm_random_graph(12, 12)
+
+    er = nx.dense_gnm_random_graph(n_nodes, n_nodes)
     for e in er.edges() :
       f,t=e
-      self.add_edge(t,f)
+      self.add_edge(f+n_edges,t+n_edges)
+    if 0 not in self.nodes(): self.add_edge(0, 1)
+
+    return self
+
+  def rand(self):
+    return self.random(12,12)
+
+  def ranDAG(self,n_nodes,n_edges):
+    er = nx.dense_gnm_random_graph(n_nodes, n_nodes)
+    for e in er.edges() :
+      f,t=e
+      self.add_edge(f,t)
     if 0 not in self.nodes(): self.add_edge(0, 1)
 
     return self
@@ -28,6 +41,11 @@ class digraph(nx.DiGraph) :
   def show(self):
     return show(self)
 
+def dir2undir(g) :
+  u=nx.Graph()
+  for f,t in g.edges() :
+    u.add_edge(f,t)
+  return u
 
 # depth first traversal
 def df_nodes(g,source):
@@ -67,7 +85,42 @@ def search(g,algo,source,target) :
       return ('found',target)
   return 'not found'
 
+def my_connected_components(g) :
+  '''
+  while there nodes not visited
+    do a dfs visit from a node
+    add all reached nodes to the current component
+    yield it
+
+  wgen don, return set of components
+  '''
+
 # TODO adapt this to return the path to target
+
+
+def topsort(g) :
+  topsorted=[]
+  perm=set()
+  temp=set()
+  def visit(n) :
+    if n in perm : return
+    if n in temp :
+      raise BaseException("not a DAG")
+    temp.add(n)
+    for m in g[n] :
+      visit(m)
+    temp.remove(n)
+    perm.add(n)
+    L.append(n)
+
+  try :
+    for n in g.nodes() :
+      if n not in perm: visit(n)
+    return topsorted
+  except :
+    return None
+
+
 
 def show(g):
   dot = gv.Digraph()
@@ -120,12 +173,29 @@ def t7() :
   g=digraph().rand().show()
   print(search(g,id_nodes,0,10))
 
+def t8() :
+  g = digraph().random(10,10).show()
+  u=dir2undir(g)
+  cs=nx.connected_components(u)
+  for c in cs :
+    print(list(cs))
+
+def t9() :
+  for _ in range(1000) :
+    g=digraph().ranDAG(20,10) #.show()
+    t=topsort(g)
+    if t:
+      g.show()
+      print(t)
+      break;
+
 #t0()
 #t1()
 #t2()
 #t3()
 #t4()
-t5()
+#t5()
 #t7()
+t8()
 
 
