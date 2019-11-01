@@ -102,25 +102,26 @@ def search(g,algo,source,target) :
 
 # TODO adapt this to return the path to target
 
-
+# see https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
 def topsort(g) :
   topsorted=[]
   perm=set()
   temp=set()
+
   def visit(n) :
+    #print(n)
     if n in perm : return
-    if n in temp :
-      raise BaseException("not a DAG")
+    if n in temp : raise BaseException("not a DAG")
     temp.add(n)
-    for m in g[n] :
-      visit(m)
+    for m in g[n] : visit(m)
     temp.remove(n)
     perm.add(n)
-    L.append(n)
+    topsorted.append(n)
 
   try :
     for n in g.nodes() :
       if n not in perm: visit(n)
+    topsorted.reverse()
     return topsorted
   except :
     return None
@@ -189,11 +190,13 @@ def t8() :
 
 
 def t9() :
-  for _ in range(1000) :
-    g=digraph().ranDAG(20,10) #.show()
+  for _ in range(10) :
+    g=digraph().random(10,10) # .show()
     t=topsort(g)
     if t:
       g.show()
+      tt=list(nx.topological_sort(g))
+      print(tt)
       print(t)
       break;
 
@@ -204,6 +207,7 @@ def t9() :
 #t4()
 #t5()
 #t7()
-t8()
+#t8()
+t9()
 
 
