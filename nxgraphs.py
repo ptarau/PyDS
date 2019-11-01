@@ -38,14 +38,28 @@ class digraph(nx.DiGraph) :
       m[f,t]=1
     return m
 
+  # turns into a directed graph
+  # that mimics an undirected one
+  def as_undir(self):
+    es=list(self.edges())
+    for f,t in es :
+      if f not in self[t] :
+        self.add_edge(t,f)
+    return self
+
+  def connected_components(self):
+    g=self.to_undirected()
+    css=list()
+    ns=set(g.nodes())
+    while ns :
+       n=ns.pop()
+       cs=set(df_nodes(g,n))
+       css.append(cs)
+       ns -= cs
+    return css
+
   def show(self):
     return show(self)
-
-def dir2undir(g) :
-  u=nx.Graph()
-  for f,t in g.edges() :
-    u.add_edge(f,t)
-  return u
 
 # depth first traversal
 def df_nodes(g,source):
@@ -85,15 +99,6 @@ def search(g,algo,source,target) :
       return ('found',target)
   return 'not found'
 
-def my_connected_components(g) :
-  '''
-  while there nodes not visited
-    do a dfs visit from a node
-    add all reached nodes to the current component
-    yield it
-
-  wgen don, return set of components
-  '''
 
 # TODO adapt this to return the path to target
 
@@ -175,10 +180,13 @@ def t7() :
 
 def t8() :
   g = digraph().random(10,10).show()
-  u=dir2undir(g)
+  #u=dir2undir(g)
+  u=g.to_undirected()
   cs=nx.connected_components(u)
-  for c in cs :
-    print(list(cs))
+  print(list(cs))
+  ccs=g.connected_components()
+  print(ccs)
+
 
 def t9() :
   for _ in range(1000) :
