@@ -126,6 +126,19 @@ def topsort(g) :
   except :
     return None
 
+# TODO - finish - add backtracking
+def gcolor(g,cs) :
+   ns=dict()
+   for s,t in g.edges() :
+     if not ns.get(s) :
+       for c in cs :
+         ns[s]=c
+         if not ns.get(t) :
+           for d in cs :
+             if d!=c :
+               ns[t]=d
+   return ns
+
 
 
 def show(g):
