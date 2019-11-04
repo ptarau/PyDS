@@ -102,6 +102,10 @@ def search(g,algo,source,target) :
 
 # TODO adapt this to return the path to target
 
+#def transclosure(m) :
+#  tc=m
+
+
 # see https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
 def topsort(g) :
   topsorted=[]
@@ -198,6 +202,22 @@ def t9() :
       print(t)
       break;
 
+def t10() :
+  g = digraph().random(5,3).show()
+  m = g.to_matrix()
+  print(m)
+  print(m.shape)
+  mm = m * m
+  print(mm)
+  dim = m.shape[0]
+  tc = m
+  for _ in range(dim) :
+    tc = np.logical_or(tc,tc * m)
+  print(tc)
+  G = digraph(tc)
+  G.show()
+
+
 #t0()
 #t1()
 #t2()
@@ -208,4 +228,6 @@ def t9() :
 #t8()
 #t9()
 t10()
+
+
 
