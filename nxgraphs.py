@@ -5,7 +5,7 @@ import numpy as np
 class digraph(nx.DiGraph) :
 
   def random(self,n_nodes,n_edges):
-    er = nx.dense_gnm_random_graph(n_nodes, n_nodes)
+    er = nx.gnm_random_graph(n_nodes, n_nodes,directed=True)
     for e in er.edges() :
       f,t=e
       self.add_edge(f,t)
@@ -99,14 +99,32 @@ def search(g,algo,source,target) :
       return ('found',target)
   return 'not found'
 
+# transitve closure using numpy matrices
+def tc_with_mat(g) :
+  m = g.to_matrix()
+  dim = m.shape[0]
+  res=m
+  tc=m
+  for _ in range(dim) :
+    tc=tc.dot(m)
+    res = np.logical_or(res, tc)
+  return digraph(res)
 
-# TODO adapt this to return the path to target
 
-#def transclosure(m) :
-#  tc=m
+# Transitive closure using dfs
+def tc(g,refl=False) :
+  t=digraph()
+  for n in g.nodes() :
+    for m in df_nodes(g,n) :
+      if m!=n or refl:
+        #print(n,m)
+        t.add_edge(n,m)
+  return t
 
 
-# see https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
+
+# topological sort
+# https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
 def topsort(g) :
   topsorted=[]
   perm=set()
@@ -203,19 +221,22 @@ def t9() :
       break;
 
 def t10() :
-  g = digraph().random(5,3).show()
+  g = digraph().random(8,20) # .show()
   m = g.to_matrix()
   print(m)
   print(m.shape)
   mm = m * m
-  print(mm)
+  #print(mm)
   dim = m.shape[0]
-  tc = m
-  for _ in range(dim) :
-    tc = np.logical_or(tc,tc * m)
-  print(tc)
-  G = digraph(tc)
+  G = tc_with_mat(g)
   G.show()
+
+def t11() :
+  g = digraph().random(8,20)
+  print(g.number_of_edges())
+  t = tc(g)
+  print(t.number_of_edges())
+  t.show()
 
 
 #t0()
@@ -228,6 +249,7 @@ def t10() :
 #t8()
 #t9()
 t10()
+#t11()
 
 
 
