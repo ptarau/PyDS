@@ -2,14 +2,17 @@ import networkx as nx
 import graphviz as gv
 import numpy as np
 
+# add a few methods to nx graphs
 class digraph(nx.DiGraph) :
 
+  # customized random graph generator
   def random(self,n_nodes,n_edges):
     er = nx.gnm_random_graph(n_nodes, n_nodes,directed=True)
     for e in er.edges() :
       f,t=e
       self.add_edge(f,t)
 
+    # ensure more than one "island"
     er = nx.dense_gnm_random_graph(n_nodes, n_nodes)
     for e in er.edges() :
       f,t=e
@@ -18,9 +21,11 @@ class digraph(nx.DiGraph) :
 
     return self
 
+  # small random graph
   def rand(self):
     return self.random(12,12)
 
+  # random directed  graph  - TODO - acyclic
   def ranDAG(self,n_nodes,n_edges):
     er = nx.dense_gnm_random_graph(n_nodes, n_nodes)
     for e in er.edges() :
@@ -30,6 +35,7 @@ class digraph(nx.DiGraph) :
 
     return self
 
+  # turns a directed graph into a 0,1 matrix
   # assumes nodes in range(0,number_of_nodes)
   def to_matrix(self):
     n=max(self.nodes())+1
@@ -47,17 +53,19 @@ class digraph(nx.DiGraph) :
         self.add_edge(t,f)
     return self
 
+  # returns a list of connected components
   def connected_components(self):
     g=self.to_undirected()
     css=list()
     ns=set(g.nodes())
     while ns :
-       n=ns.pop()
-       cs=set(df_nodes(g,n))
-       css.append(cs)
-       ns -= cs
+       n=ns.pop() # remove n from set
+       cs=set(df_nodes(g,n)) # island reacheable from n
+       css.append(cs) # add island
+       ns -= cs # all nodes not on the island
     return css
 
+  # dosplays graph using graphviz
   def show(self):
     return show(self)
 
@@ -93,6 +101,7 @@ def id_nodes(g,source,max_depth=None):
     for n in visit(source,fuel) :
       yield n
 
+# search using dfs, bfs, id algorithm
 def search(g,algo,source,target) :
   for n in algo(g,source) :
     if n == target :
@@ -104,10 +113,10 @@ def tc_with_mat(g) :
   m = g.to_matrix()
   dim = m.shape[0]
   res=m
-  tc=m
+  pow=m
   for _ in range(dim) :
-    tc=tc.dot(m)
-    res = np.logical_or(res, tc)
+    pow=pow.dot(m)
+    res = np.logical_or(res, pow)
   return digraph(res)
 
 
@@ -248,8 +257,8 @@ def t11() :
 #t7()
 #t8()
 #t9()
-t10()
-#t11()
+#t10()
+t11()
 
 
 
