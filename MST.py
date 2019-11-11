@@ -9,7 +9,7 @@ import numpy as np
 import random
 import math
 
-# turns weighte grap into matrix
+# turns weighted graph into matrix
 def to_matrix(g):
   n=max(g.nodes())+1
   m=np.zeros((n,n),dtype=int)
@@ -83,32 +83,6 @@ class UF:
             p = self._id[p]
         return p
 
-# prim's algorithm
-# see also https://en.wikipedia.org/wiki/Prim%27s_algorithm
-def prim(G):
-    # initialize the MST and the set X
-    MST = set()
-    X = set()
-
-    # select an arbitrary vertex to begin with
-    X.add(0)
-    while len(X) != G.vert_count:
-        crossing = set()
-        # for each element x in X, add the edge (x, k) to crossing if
-        # k is not in X
-        for x in X:
-            for k in range(G.vert_count):
-                if k not in X and G.graph[x][k] != 0:
-                    crossing.add((x, k))
-        # find the edge with the smallest weight in crossing
-        edge = sorted(crossing, key=lambda e:G.graph[e[0]][e[1]])[0]
-        # add this edge to MST
-        MST.add(edge)
-        # add the new vertex to X
-        X.add(edge[1])
-    return MST
-
-
 # kruskal's algorithm
 # see also: https://en.wikipedia.org/wiki/Kruskal%27s_algorithm
 def kruskal(G):
@@ -132,6 +106,34 @@ def kruskal(G):
         uf.union(u, v)
         MST.add(e)
     return MST
+
+# prim's algorithm
+# see also https://en.wikipedia.org/wiki/Prim%27s_algorithm
+def prim(G):
+    # initialize the MST and the set X
+    MST = set()
+    X = set()
+
+    # select an arbitrary vertex to begin with
+    X.add(0)
+    while len(X) != G.vert_count:
+        crossing = set()
+        # for each element x in X, add the edge (x, k) to crossing if
+        # k is not in X
+        for x in X:
+            for k in range(G.vert_count):
+                if k not in X and G.graph[x][k] != 0:
+                    crossing.add((x, k))
+        # find the edge with the smallest weight in crossing
+        # can be made faster with priority queues
+        edge = sorted(crossing, key=lambda e:G.graph[e[0]][e[1]])[0]
+        # add this edge to MST
+        MST.add(edge)
+        # add the new vertex to X
+        X.add(edge[1])
+    return MST
+
+
 
 # runs the algorithms on random weighted matrix
 def mgo():
