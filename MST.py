@@ -67,18 +67,18 @@ class UF:
 
     # judge two node connected or not
     def connected(self, p, q):
-        return self._find(p) == self._find(q)
+        return self.find(p) == self.find(q)
 
     # quick union two component
     def union(self, p, q):
-        p_root = self._find(p)
-        q_root = self._find(q)
+        p_root = self.find(p)
+        q_root = self.find(q)
         if p_root == q_root:
             return
         self._id[p_root] = q_root
 
     # find the root of p
-    def _find(self, p):
+    def find(self, p):
         while p != self._id[p]:
             p = self._id[p]
         return p
@@ -127,6 +127,7 @@ def prim(G):
         # find the edge with the smallest weight in crossing
         # can be made faster with priority queues
         edge = sorted(crossing, key=lambda e:G.graph[e[0]][e[1]])[0]
+
         # add this edge to MST
         MST.add(edge)
         # add the new vertex to X
