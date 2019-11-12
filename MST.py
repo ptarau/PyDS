@@ -8,6 +8,8 @@ import graphviz as gv
 import numpy as np
 import random
 import math
+import heapq
+
 
 # turns weighted graph into matrix
 def to_matrix(g):
@@ -117,19 +119,27 @@ def prim(G):
     # select an arbitrary vertex to begin with
     X.add(0)
     while len(X) != G.vert_count:
-        crossing = set()
+        #crossing = set()
+        crossing = []
+
+
         # for each element x in X, add the edge (x, k) to crossing if
         # k is not in X
         for x in X:
             for k in range(G.vert_count):
-                if k not in X and G.graph[x][k] != 0:
-                    crossing.add((x, k))
+                weight =G.graph[x][k]
+                if k not in X and weight != 0:
+                    #crossing.add((x,k))
+                    heapq.heappush(crossing,(weight,x, k))
         # find the edge with the smallest weight in crossing
         # can be made faster with priority queues
-        edge = sorted(crossing, key=lambda e:G.graph[e[0]][e[1]])[0]
+        #edge = sorted(crossing, key=lambda e:G.graph[e[0]][e[1]])[0]
+        weight,x,k = heapq.heappop(crossing)
+        edge = x,k
 
         # add this edge to MST
         MST.add(edge)
+        #print('!!!! ADD',edge)
         # add the new vertex to X
         X.add(edge[1])
     return MST
