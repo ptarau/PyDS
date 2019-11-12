@@ -33,7 +33,7 @@ def ran_graph(m,n) :
 class WeightedGraph:
   # overloaded contructor:
   # if M is an int, user random matrix
-  # otherwise make matrix from given underected weighted graph
+  # otherwise make matrix from given undirected weighted graph
   def __init__(self,M):
     if isinstance(M,int) :
       self.graph=np.random.rand(M,M)
