@@ -33,7 +33,7 @@ def ran_graph(m,n) :
 class WeightedGraph:
   # overloaded contructor:
   # if M is an int, user random matrix
-  # otherwise make matrix from given undirected weighted graph
+  # otherwise make matrix from given underected weighted graph
   def __init__(self,M):
     if isinstance(M,int) :
       self.graph=np.random.rand(M,M)
@@ -114,34 +114,34 @@ def kruskal(G):
 def prim(G):
     # initialize the MST and the set X
     MST = set()
-    X = set()
+    Closed = set()
 
     # select an arbitrary vertex to begin with
-    X.add(0)
-    while len(X) != G.vert_count:
-        #crossing = set()
-        crossing = []
+    Closed.add(0)
+    while len(Closed) != G.vert_count:
+        #Open = set()
+        Open = []
 
 
-        # for each element x in X, add the edge (x, k) to crossing if
-        # k is not in X
-        for x in X:
+        # for each element x in Closed, add the edge (x, k) to Open if
+        # k is not in Open
+        for x in Closed:
             for k in range(G.vert_count):
                 weight =G.graph[x][k]
-                if k not in X and weight != 0:
-                    #crossing.add((x,k))
-                    heapq.heappush(crossing,(weight,x, k))
-        # find the edge with the smallest weight in crossing
+                if k not in Closed and weight != 0:
+                    #Open.add((x,k))
+                    heapq.heappush(Open,(weight,x, k))
+        # find the edge with the smallest weight in Open
         # can be made faster with priority queues
-        #edge = sorted(crossing, key=lambda e:G.graph[e[0]][e[1]])[0]
-        weight,x,k = heapq.heappop(crossing)
+        #edge = sorted(Open, key=lambda e:G.graph[e[0]][e[1]])[0]
+        weight,x,k = heapq.heappop(Open)
         edge = x,k
 
         # add this edge to MST
         MST.add(edge)
         #print('!!!! ADD',edge)
         # add the new vertex to X
-        X.add(edge[1])
+        Closed.add(edge[1])
     return MST
 
 
