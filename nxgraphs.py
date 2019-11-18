@@ -1,7 +1,7 @@
 import networkx as nx
 import graphviz as gv
 import numpy as np
-
+import copy
 # add a few methods to nx graphs
 class digraph(nx.DiGraph) :
 
@@ -16,7 +16,7 @@ class digraph(nx.DiGraph) :
     er = nx.dense_gnm_random_graph(n_nodes, n_nodes)
     for e in er.edges() :
       f,t=e
-      self.add_edge(f+n_edges,t+n_edges)
+      self.add_edge(f+n_nodes,t+n_nodes)
     if 0 not in self.nodes(): self.add_edge(0, 1)
 
     return self
@@ -64,6 +64,40 @@ class digraph(nx.DiGraph) :
        css.append(cs) # add island
        ns -= cs # all nodes not on the island
     return css
+
+  # networkx based pagerank
+  def pagerank(self):
+    return nx.pagerank(self)
+
+  # pagerank using the weights of the pagerank of the line-graph
+  def meta_rank(self):
+    c=copy.deepcopy(self)
+    pr = c.pagerank()
+    print('PR', pr,'\n')
+
+    lg=self.to_line_graph()
+    #show(lg,fname='meta.gv')
+    lpr=nx.pagerank(lg)
+    print('LR', lpr, '\n')
+    for k in list(lpr) :
+      r=lpr[k]
+      lpr[k]=r*r
+    g=copy.deepcopy(self)
+    #for f,t in g.edges() : g[f][t]["weight"]=lpr[(f,t)]
+    nx.set_edge_attributes(g,lpr,name="weight")
+    #print('EATS',dict(nx.get_edge_attributes(g,name="weight")),'\n')
+    #print("LPR",lpr,'\n')
+    mr = g.pagerank()
+    print('MR', mr, '\n')
+
+    nx.set_node_attributes(g,mr,name='weight')
+    #print('NATS', dict(nx.get_node_attributes(g, name="weight")),'\n')
+    #show(g)
+    return g
+
+  def to_line_graph(self):
+    return nx.line_graph(self)
+
 
   # dosplays graph using graphviz
   def show(self):
@@ -157,14 +191,28 @@ def topsort(g) :
   except :
     return None
 
-def show(g):
+def show(g,fname='graph.gv'):
+  def round(x) :
+    prec = 1000
+    return str(int(prec*w)/prec)
   dot = gv.Digraph()
-  for e in g.edges():
+  d = nx.get_node_attributes(g, name='weight')
+  de = nx.get_edge_attributes(g, name='weight')
+  #print(len(d),"DDD",d)
+  #print(len(d), "EEE", de)
+  for (n,w) in d.items() :
+      label = round(w)
+      dot.node(str(n),label=str(n)+":"+label)
+  for e,w in de.items():
     f, t = e
-    dot.edge(str(f), str(t), label='')
+    #w = g[f][t].get('weight')
+    label=''
+    if w : label=round(w)
+    dot.edge(str(f), str(t), label=label)
     #print(dot.source)
-  dot.render('graph.gv', view=True)
+  dot.render(fname, view=True)
   return g
+
 
 def t1() :
   # edges
@@ -247,6 +295,17 @@ def t11() :
   print(t.number_of_edges())
   t.show()
 
+def t12() :
+  g = digraph().random(5, 30)
+  print(g.number_of_edges())
+  lg=g.to_line_graph()
+  show(g)
+  show(lg,fname='line_graph.gv')
+
+def t13() :
+  g = digraph().random(5, 30)
+  g=g.meta_rank()
+  show(g,fname='meta.gv')
 
 #t0()
 #t1()
@@ -258,7 +317,7 @@ def t11() :
 #t8()
 #t9()
 #t10()
-t11()
+t13()
 
 
 
