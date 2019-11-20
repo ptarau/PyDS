@@ -14,7 +14,7 @@ def digest(doc) :
   with open(doc,'r') as f :
     for line in f.readlines() :
       line=line.replace('\n',' ')
-      text.append(line+" ")
+      text.append(line+" ") #?
   text="".join(text)
   sents=nltk.sent_tokenize(text)
   wss=map(nltk.word_tokenize,sents)
@@ -34,8 +34,8 @@ def add_weighted_edge_(g,i,j,wss) :
   l = len(shared)
   r = len(ws) + len(us) - l
   if l > 1:
-    fr = min(i,j)
-    to = max(i,j)
+    to = min(i,j)
+    fr = max(i,j)
     g.add_edge(fr, to, weight=l/r)
 
 # bi-directional links
@@ -70,7 +70,7 @@ def build_intersection_graph(wss) :
   g=nx.DiGraph()
   m=len(wss)
   for i in range(m) :
-    for j in range(i,m) :
+    for j in range(0,m) : #?
       add_weighted_edge(g, i, j, wss)
   return g
 
