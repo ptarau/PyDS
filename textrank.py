@@ -24,7 +24,7 @@ def digest(doc) :
     goodWordsSets.append(ts)
   return goodWordsSets,sents
 
-# heuristics for adding edges
+# heuristics for adding edges: pick one
 
 # from last to first
 def add_weighted_edge_(g,i,j,wss) :
@@ -38,6 +38,7 @@ def add_weighted_edge_(g,i,j,wss) :
     to = max(i,j)
     g.add_edge(fr, to, weight=l/r)
 
+# bi-directional links
 def add_weighted_edge__(g,i,j,wss) :
   ws = wss[i]
   us = wss[j]
@@ -64,9 +65,6 @@ def add_weighted_edge(g,i,j,wss) :
       to = i
     g.add_edge(fr, to, weight=l/r)
 
-
-
-
 # build graph connecting sentences with shared words
 def build_intersection_graph(wss) :
   g=nx.DiGraph()
@@ -86,16 +84,12 @@ def best_sents(g,k) :
     (r,i) = heapq.heappop(ranked)
     yield i
 
-
 # summarizer
 def summarize(name='us_constitution.txt') :
   wss,sents=digest(name)
   g=build_intersection_graph(wss)
   for i in sorted(best_sents(g,5)) :
     yield i,sents[i]
-  
-
-#print(list(r))
 
 def go() :
   for ns in summarize() :
