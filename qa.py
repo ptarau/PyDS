@@ -18,10 +18,12 @@ def digest(doc) :
   text="".join(text)
   sents=nltk.sent_tokenize(text)
   wss=map(nltk.word_tokenize,sents)
+
   goodWordsSets=[]
   for ws in wss :
     ts=set(w for (w,t) in nltk.pos_tag(ws) if good_word((w,t)))
     goodWordsSets.append(ts)
+
   return goodWordsSets,sents
 
 # heuristics for adding edges: pick one
@@ -95,4 +97,31 @@ def go() :
   for ns in summarize() :
     print(ns)
 
-go()
+
+def qa_loop(doc,question=None) :
+  wss,sents=digest(doc)
+  if question :
+    q=question
+  else :
+    q=input('Your question: ')
+  ws=nltk.word_tokenize(q)
+  #print(wss[0])
+  #print(ws)
+  good_ws = set(w for (w, t) in nltk.pos_tag(ws) if good_word((w, t)))
+  print('GOOD',good_ws)
+  #shared={ws for ws in wss if good_ws.intersection(ws)}
+  l=len(wss)
+  print(l,'==',len(sents))
+  for i in range(l) :
+    doc_ws = set(wss[i])
+    #if i<5 : print(doc_ws)
+    shared = good_ws.intersection(doc_ws)
+    if shared : print(shared,i)
+    #if len(shared) > 1 : print(sents(shared[0]))
+
+  #print(shared)
+#go()
+
+qa_loop('us_constitution.txt','Who can tax the people?')
+
+
