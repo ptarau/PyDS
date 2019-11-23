@@ -2,126 +2,162 @@
 import nltk
 import networkx as nx
 import heapq
+import math
+
+default_doc='us_constitution.txt'
 
 # nouns,verbs,adjectives
 def good_word(wt) :
-  t=wt[1]
-  return t[0] in "NJV"
+  w,t=wt
+  return t[0] in "NJV"  and w.lower() not in stopwords
 
-# from a file to sentences and tokens
+# words not worth using for retrivieng content
+stopwords= {'am', 'are', 'be', 'been', 'being', 'did', 'do', 'does', 'doing',
+             'don', 'few', 'had', 'has', 'have', 'having', 'hers', 'i', 'is',
+             'may', 'might', 'most', 'other', 'others', 'our', 'ourselves',
+            'own', 's', 'same', 'such',
+             'their', 'theirs', 'was', 'were', 'would', 'your',
+            'yours', 'yourselves'}
+
+# from a file, to sentences and tokens
 def digest(doc) :
   text=[]
   with open(doc,'r') as f :
     for line in f.readlines() :
       line=line.replace('\n',' ')
-      text.append(line) #?
-  text="".join(text)
-  sents=nltk.sent_tokenize(text)
-  wss=map(nltk.word_tokenize,sents)
-
-  goodWordsSets=[]
+      text.append(line)
+  text="".join(text) # text as read from file
+  sents=nltk.sent_tokenize(text) # list of sentences
+  wss=map(nltk.word_tokenize,sents) # list of list of words
+  goodTokenSets=[] # token = (word,POS-tag)
   for ws in wss :
     ts=set(w for (w,t) in nltk.pos_tag(ws) if good_word((w,t)))
-    goodWordsSets.append(ts)
-
-  return goodWordsSets,sents
-
-# heuristics for adding edges: pick one
-
-# from last to first
-def add_weighted_edge_(g,i,j,wss) :
-  ws = wss[i]
-  us = wss[j]
-  shared = ws.intersection(us)
-  l = len(shared)
-  r = len(ws) + len(us) - l
-  if l > 1:
-    to = min(i,j)
-    fr = max(i,j)
-    g.add_edge(fr, to, weight=l/r)
-
-# bi-directional links
-def add_weighted_edge__(g,i,j,wss) :
-  ws = wss[i]
-  us = wss[j]
-  shared = ws.intersection(us)
-  l = len(shared)
-  r = len(ws) + len(us) - l
-  if l > 1:
-    g.add_edge(i, j, weight=l/r)
-    g.add_edge(j, i, weight=l/r)
-    
-# from longest to shortest
-def add_weighted_edge(g,i,j,wss) :
-  ws = wss[i]
-  us = wss[j]
-  shared = ws.intersection(us)
-  l = len(shared)
-  r = len(ws) + len(us) - l
-  if l > 1:
-    if len(us)<len(ws) :
-      fr=i
-      to=j
-    else :
-      fr = j
-      to = i
-    g.add_edge(fr, to, weight=l/r)
+    goodTokenSets.append(ts)
+  return goodTokenSets,sents
 
 # build graph connecting sentences with shared words
 def build_intersection_graph(wss) :
   g=nx.DiGraph()
   m=len(wss)
   for i in range(m) :
-    for j in range(0,m) : #?
+    for j in range(0,m) :
       add_weighted_edge(g, i, j, wss)
   return g
 
-# highest ranked k sentences
-def best_sents(g,k) :
-  d=nx.pagerank(g)
+# heuristics for adding edges:
+# from last to first and if first longer also back when relevant
+def add_weighted_edge(g,i,j,wss) :
+  ws = wss[i]
+  us = wss[j]
+  shared = ws.intersection(us)
+  l = len(shared)
+  r = len(ws) + len(us) - l
+  if l > 0:
+    to = min(i,j)
+    fr = max(i,j)
+    g.add_edge(fr, to, weight=l/r)
+    if len(wss[fr])<len(wss[to])  and l>1:
+      g.add_edge(to, fr, weight=l / r)
+
+# yields highest ranked k sentence numbers
+# if personalisation dictionary given
+# yields those relavant to it
+def best_sents(g,wss,k,pers=None) :
+  d=nx.pagerank(g,personalization=pers)
   ranked=[]
-  for (w,r) in d.items() :
-    heapq.heappush(ranked,(1-r,w))
+  for (s,r) in d.items() :
+    rank=(1-r) #(1+math.log(1+len(wss[s])))
+    heapq.heappush(ranked,(rank,s))
   for _ in range(k) :
     (r,i) = heapq.heappop(ranked)
     yield i
 
 # summarizer
-def summarize(name='us_constitution.txt') :
-  wss,sents=digest(name)
+def summarize(doc=default_doc) :
+  wss,sents=digest(doc)
   g=build_intersection_graph(wss)
-  for i in sorted(best_sents(g,5)) :
+  xs=best_sents(g,wss,5)
+  for i in sorted(xs) :
     yield i,sents[i]
 
-def go() :
-  for ns in summarize() :
+# tests summary extraction
+def sumtest(doc=default_doc) :
+  print('SUMMARY')
+  for ns in summarize(doc) :
     print(ns)
+  print('')
 
-
-def qa_loop(doc,question=None) :
+# intracts via QA loop or answers canned question
+def qa_loop(doc=default_doc,answer_count=3,question=None) :
   wss,sents=digest(doc)
+  g = build_intersection_graph(wss)
+  prompt='Your question: '
   if question :
-    q=question
+    print(prompt,question)
+    show_answers(qa_step(wss, sents, g, answer_count, question))
   else :
-    q=input('Your question: ')
-  ws=nltk.word_tokenize(q)
-  #print(wss[0])
-  #print(ws)
-  good_ws = set(w for (w, t) in nltk.pos_tag(ws) if good_word((w, t)))
-  print('GOOD',good_ws)
-  #shared={ws for ws in wss if good_ws.intersection(ws)}
-  l=len(wss)
-  print(l,'==',len(sents))
-  for i in range(l) :
-    doc_ws = set(wss[i])
-    #if i<5 : print(doc_ws)
-    shared = good_ws.intersection(doc_ws)
-    if shared : print(shared,i)
-    #if len(shared) > 1 : print(sents(shared[0]))
+    while(True) :
+      q=input(prompt)
+      if not q : break
+      show_answers(qa_step(wss, sents, g, answer_count, q))
 
-  #print(shared)
-#go()
+# displays answers if any
+def show_answers(answer_generator) :
+    answers=list(answer_generator)
+    if answers :
+      for answer in answers:
+        print(answer)
+    else :
+      print('I have no answer to that.')
+    print('')
 
-qa_loop('us_constitution.txt','Who can tax the people?')
+# finds answer(s) to one question
+def qa_step(wss,sents,g,k,question) :
+  ws=nltk.word_tokenize(question)
+  query_ws = set(w for (w, t) in nltk.pos_tag(ws) if good_word((w, t)))
+  sent_count=len(wss)
+  personalizer=dict()
+  sharing_count=0
+  max_shared=0
+  for i in range(sent_count) :
+    doc_ws = wss[i]
+    shared = query_ws.intersection(doc_ws)
+    l=len(shared)
+    if l>0 :
+      personalizer[i]=l
+      sharing_count+=l
+      max_shared=max(max_shared,l)
+  for i,v in personalizer.items():
+     personalizer[i]=v/sharing_count
+  #print(personalizer)
+  xs=best_sents(g,wss,100,pers=personalizer)
+  best=[]
+  for i in xs :
+    if k<=0 : break;
+    shared=wss[i].intersection(ws)
+    if len(shared)>=max_shared-1 and len(shared)>0:
+      k -= 1
+      best.append( (i,sents[i]) )
+  for x in sorted(best) :
+    yield x
+
+# tests ------------
+
+# test QA with canned question - good for fine-tuning things
+def qtest() :
+  qa_loop(default_doc,answer_count=3,question='What are the powers of the Senate?')
+
+# runs a canned query on default document
+def go() :
+  sumtest()
+  qtest()
+
+# interactive chat about given document
+def chat(doc=default_doc) :
+  sumtest(doc=doc)
+  qa_loop(doc=doc, answer_count=3)
+
+# by default, interact!
+chat()
 
 
