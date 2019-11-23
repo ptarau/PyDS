@@ -31,7 +31,7 @@ def digest(doc) :
   wss=map(nltk.word_tokenize,sents) # list of list of words
   goodTokenSets=[] # token = (word,POS-tag)
   for ws in wss :
-    ts=set(w for (w,t) in nltk.pos_tag(ws) if good_word((w,t)))
+    ts=set(w.lower() for (w,t) in nltk.pos_tag(ws) if good_word((w,t)))
     goodTokenSets.append(ts)
   return goodTokenSets,sents
 
@@ -45,19 +45,16 @@ def build_intersection_graph(wss) :
   return g
 
 # heuristics for adding edges:
-# from last to first and if first longer also back when relevant
+# bi-directional if they share words
 def add_weighted_edge(g,i,j,wss) :
   ws = wss[i]
   us = wss[j]
   shared = ws.intersection(us)
   l = len(shared)
-  r = len(ws) + len(us) - l
-  if l > 0:
-    to = min(i,j)
-    fr = max(i,j)
-    g.add_edge(fr, to, weight=l/r)
-    if len(wss[fr])<len(wss[to])  and l>1:
-      g.add_edge(to, fr, weight=l / r)
+  if l>0 :
+    r = len(ws) + len(us) - l
+    g.add_edge(i, j, weight=l/r)
+    g.add_edge(j, i, weight=l / r)
 
 # yields highest ranked k sentence numbers
 # if personalisation dictionary given
