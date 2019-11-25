@@ -32,7 +32,7 @@ def digest(doc) :
   goodTokenSets=[] # token = (word,POS-tag)
   for ws in wss :
     ts=set(w.lower() for (w,t) in nltk.pos_tag(ws) if good_word((w,t)))
-    print('ts',ts)
+    #print('ts',ts)
     goodTokenSets.append(ts)
   return goodTokenSets,sents
 
@@ -103,6 +103,7 @@ def qa_loop(doc=default_doc,answer_count=3,question=None) :
 # displays answers if any
 def show_answers(answer_generator) :
     answers=list(answer_generator)
+    print('')
     if answers :
       for answer in answers:
         print(answer)
@@ -114,7 +115,6 @@ def show_answers(answer_generator) :
 def qa_step(wss,sents,g,k,question) :
   ws=nltk.word_tokenize(question)
   query_ws = set(w.lower() for (w, t) in nltk.pos_tag(ws) if good_word((w, t)))
-  print('qws',query_ws)
   sent_count=len(wss)
   personalizer=dict()
   sharing_count=0
@@ -122,7 +122,6 @@ def qa_step(wss,sents,g,k,question) :
   for i in range(sent_count) :
     doc_ws = wss[i]
     shared = query_ws.intersection(doc_ws)
-    if shared: print('shared',i,shared)
     l=len(shared)
     if l>0 :
       personalizer[i]=l
@@ -130,15 +129,18 @@ def qa_step(wss,sents,g,k,question) :
       max_shared=max(max_shared,l)
   for i,v in personalizer.items():
      personalizer[i]=v/sharing_count
-  print(personalizer)
   xs=best_sents(g,wss,100,pers=personalizer)
   best=[]
+  seen=set()
   for i in xs :
     if k<=0 : break;
-    shared=wss[i].intersection(ws)
+    shared=wss[i].intersection(query_ws)
     if len(shared)>=max_shared-1 and len(shared)>0:
+      s=sents[i]
+      if s in seen : continue
       k -= 1
-      best.append( (i,sents[i]) )
+      best.append( (i,s) )
+      seen.add(s)
   for x in sorted(best) :
     yield x
 
