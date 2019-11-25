@@ -194,7 +194,7 @@ def topsort(g) :
 def show(g,fname='graph.gv'):
   def round(x) :
     prec = 1000
-    return str(int(prec*w)/prec)
+    return str(int(prec*x)/prec)
   dot = gv.Digraph()
   d = nx.get_node_attributes(g, name='weight')
   de = nx.get_edge_attributes(g, name='weight')

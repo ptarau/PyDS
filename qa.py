@@ -32,6 +32,7 @@ def digest(doc) :
   goodTokenSets=[] # token = (word,POS-tag)
   for ws in wss :
     ts=set(w.lower() for (w,t) in nltk.pos_tag(ws) if good_word((w,t)))
+    print('ts',ts)
     goodTokenSets.append(ts)
   return goodTokenSets,sents
 
@@ -66,8 +67,9 @@ def best_sents(g,wss,k,pers=None) :
     rank=(1-r) #(1+math.log(1+len(wss[s])))
     heapq.heappush(ranked,(rank,s))
   for _ in range(k) :
-    (r,i) = heapq.heappop(ranked)
-    yield i
+    if ranked:
+      (r,i) = heapq.heappop(ranked)
+      yield i
 
 # summarizer
 def summarize(doc=default_doc) :
@@ -111,7 +113,8 @@ def show_answers(answer_generator) :
 # finds answer(s) to one question
 def qa_step(wss,sents,g,k,question) :
   ws=nltk.word_tokenize(question)
-  query_ws = set(w for (w, t) in nltk.pos_tag(ws) if good_word((w, t)))
+  query_ws = set(w.lower() for (w, t) in nltk.pos_tag(ws) if good_word((w, t)))
+  print('qws',query_ws)
   sent_count=len(wss)
   personalizer=dict()
   sharing_count=0
@@ -119,6 +122,7 @@ def qa_step(wss,sents,g,k,question) :
   for i in range(sent_count) :
     doc_ws = wss[i]
     shared = query_ws.intersection(doc_ws)
+    if shared: print('shared',i,shared)
     l=len(shared)
     if l>0 :
       personalizer[i]=l
@@ -126,7 +130,7 @@ def qa_step(wss,sents,g,k,question) :
       max_shared=max(max_shared,l)
   for i,v in personalizer.items():
      personalizer[i]=v/sharing_count
-  #print(personalizer)
+  print(personalizer)
   xs=best_sents(g,wss,100,pers=personalizer)
   best=[]
   for i in xs :
