@@ -4,7 +4,6 @@ import numpy as np
 import copy
 # add a few methods to nx graphs
 class digraph(nx.DiGraph) :
-
   # customized random graph generator
   def random(self,n_nodes,n_edges):
     er = nx.gnm_random_graph(n_nodes, n_nodes,directed=True)
@@ -317,7 +316,5 @@ def t13() :
 #t8()
 #t9()
 #t10()
-t13()
-
-
+#t13()
 
